@@ -3,6 +3,7 @@ using Contacts.Data.Models;
 using Contacts.Models.Contacts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace Contacts.Controllers
 {
@@ -66,5 +67,74 @@ namespace Contacts.Controllers
 
             return View(model);
         }
+
+        public async Task<IActionResult> Team()
+        {
+            var userId = Guid.Parse(GetUserId());
+
+            var allContacts = await context.ApplicationUsersContacts
+                .Where(u => u.ApplicationUserId == userId)
+                .Select(x => new ContactFormModel
+                {
+                    ContactId = x.Contact.Id,
+                    FirstName = x.Contact.FirstName,
+                    LastName = x.Contact.LastName,
+                    Email = x.Contact.Email,
+                    Address = x.Contact.Address ?? string.Empty,
+                    PhoneNumber = x.Contact.PhoneNumber,
+                    Website = x.Contact.Website
+                })
+                .ToArrayAsync();
+
+            ContactVM model = new ContactVM()
+            {
+                Contacts = allContacts,
+            };
+
+            return View(model);
+        }
+
+        public async Task<IActionResult> AddToTeam(int id)
+        {
+            var userId = Guid.Parse(GetUserId());
+            var contactId = id;
+
+            var ac = new ApplicationUserContact()
+            {
+                ApplicationUserId = userId,
+                ContactId = contactId,
+            };
+
+            if (await context.ApplicationUsersContacts.ContainsAsync(ac))
+            {
+                return RedirectToAction("All");
+            }
+
+            await context.ApplicationUsersContacts.AddAsync(ac);
+            await context.SaveChangesAsync();
+
+            return RedirectToAction("Team");
+        }
+
+        public async Task<IActionResult> RemoveFromTeam(int id)
+        {
+            var userId = Guid.Parse(GetUserId());
+
+            var ac = await context.ApplicationUsersContacts.FirstOrDefaultAsync(x => x.ContactId == id && x.ApplicationUserId == userId);
+
+            if (ac == null)
+            {
+                return RedirectToAction("Team");
+            }
+
+            context.ApplicationUsersContacts.Remove(ac);
+            await context.SaveChangesAsync();
+
+            return RedirectToAction("All");
+        }
+
+        protected string GetUserId() 
+            => User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
     }
 }

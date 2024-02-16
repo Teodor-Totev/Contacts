@@ -2,7 +2,7 @@
     ViewBag.Title = "My Team";
 }
 
-@*
+
 <h2 class="text-center">@ViewBag.Title</h2>
 <hr />
 
@@ -33,7 +33,7 @@
                     <td>@contact.Website</td>
                     <td>
                         <span style="float:left">
-                            <form class="input-group-sm" asp-controller="Contacts" asp-action="RemoveFromTeam" asp-route-contactId="@contact.ContactId">
+                            <form class="input-group-sm" asp-controller="Contacts" asp-action="RemoveFromTeam" asp-route-id="@contact.ContactId">
                                 <input type="submit" value="Remove from Team" class="fs-6 btn btn-success mb-3 p-2" />
                             </form>
                         </span>
@@ -50,4 +50,3 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }
-*@

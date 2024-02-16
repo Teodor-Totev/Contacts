@@ -10,9 +10,8 @@
 	@if (signInManager.IsSignedIn(User))
 	{
 		<li class="nav-item d-flex align-items-center">
-			
+			<span style="margin-right: 10px">Hello, @User.Identity.Name!</span>
 			<form class="form-inline" asp-controller="User" asp-action="Logout" asp-route-id="@userManager.GetUserId(User)">
-				<span style="margin-right: 10px">Hello, @User.Identity.Name!</span>
 				<input type="submit" class="nav-link btn btn-link text-dark d-inline" value="Logout" />
 			</form>
 		</li>

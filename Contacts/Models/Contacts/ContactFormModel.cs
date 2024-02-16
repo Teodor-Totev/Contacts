@@ -26,5 +26,7 @@ namespace Contacts.Models.Contacts
 		[Display(Name = "Website")]
 		[Url(ErrorMessage = "Invalid URL format.")]
 		public string Website { get; set; } = null!;
-	}
+
+        public int ContactId { get; set; }
+    }
 }

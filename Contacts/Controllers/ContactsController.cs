@@ -2,6 +2,7 @@
 using Contacts.Data.Models;
 using Contacts.Models.Contacts;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Contacts.Controllers
 {
@@ -45,7 +46,25 @@ namespace Contacts.Controllers
 
         public async Task<IActionResult> All()
         {
+            var allContacts = await context.Contacts
+                .Select(x => new ContactFormModel
+                {
+                    ContactId = x.Id,
+                    FirstName = x.FirstName,
+                    LastName = x.LastName,
+                    Email = x.Email,
+                    Address = x.Address,
+                    PhoneNumber = x.PhoneNumber,
+                    Website = x.Website
+                })
+                .ToArrayAsync();
 
+            ContactVM model = new ContactVM()
+            {
+                Contacts = allContacts,
+            };
+
+            return View(model);
         }
     }
 }

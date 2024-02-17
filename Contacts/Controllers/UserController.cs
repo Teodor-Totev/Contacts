@@ -47,13 +47,13 @@ namespace Contacts.Controllers
 
 			if (result.Succeeded)
 			{
-				await _signInManager.PasswordSignInAsync(
-					model.UserName,
-					model.Password,
-					true,
-					false);
+				//await _signInManager.PasswordSignInAsync(
+				//	model.UserName,
+				//	model.Password,
+				//	true,
+				//	false);
 
-				return RedirectToAction("Index", "Home");
+				return RedirectToAction("Login");
 			}
 
 			foreach (var err in result.Errors)

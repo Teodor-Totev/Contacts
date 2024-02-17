@@ -16,6 +16,7 @@ namespace Contacts.Controllers
             this.context = context;
         }
 
+        [HttpGet]
         public IActionResult Add()
         {
             return View();
@@ -42,6 +43,58 @@ namespace Contacts.Controllers
             await context.Contacts.AddAsync(c);
             await context.SaveChangesAsync();
 
+            return RedirectToAction("All");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var contact = await context.Contacts
+                .FindAsync(id);
+
+            if (contact == null)
+            {
+                return BadRequest();
+            }
+
+            var model = new ContactFormModel()
+            {
+                FirstName = contact.FirstName,
+                LastName = contact.LastName,
+                Email = contact.Email,
+                PhoneNumber = contact.PhoneNumber,
+                Address = contact.Address ?? string.Empty,
+                Website = contact.Website,
+                ContactId = contact.Id
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(int id, ContactFormModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var contact = await context.Contacts
+               .FindAsync(id);
+
+            if (contact == null)
+            {
+                return BadRequest();
+            }
+
+            contact.FirstName = model.FirstName;
+            contact.LastName = model.LastName;
+            contact.Email = model.Email;
+            contact.Address = model.Address;
+            contact.PhoneNumber = model.PhoneNumber;
+            contact.Website = model.Website;
+
+            await context.SaveChangesAsync();
             return RedirectToAction("All");
         }
 
@@ -113,7 +166,7 @@ namespace Contacts.Controllers
             await context.ApplicationUsersContacts.AddAsync(ac);
             await context.SaveChangesAsync();
 
-            return RedirectToAction("Team");
+            return RedirectToAction("All");
         }
 
         public async Task<IActionResult> RemoveFromTeam(int id)
@@ -130,10 +183,10 @@ namespace Contacts.Controllers
             context.ApplicationUsersContacts.Remove(ac);
             await context.SaveChangesAsync();
 
-            return RedirectToAction("All");
+            return RedirectToAction("Team");
         }
 
-        protected string GetUserId() 
+        protected string GetUserId()
             => User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
     }
